@@ -12,7 +12,7 @@ from pathlib import Path
 
 # Configuration that will be used by the Mask-RCNN library
 class MaskRCNNConfig(mrcnn.config.Config):
-    NAME = "coco_pretrained_model_config"
+    NAME = 'coco_pretrained_model_config'
     IMAGES_PER_GPU = 1
     GPU_COUNT = 1
     NUM_CLASSES = 1 + 80  # COCO dataset has 80 classes + one background class
@@ -30,13 +30,13 @@ def get_car_boxes(boxes, class_ids):
     return np.array(car_boxes)
 
 # Root directory of the project
-ROOT_DIR = Path("./golddust/lvbcam")
+ROOT_DIR = Path('./golddust/lvbcam')
 
 # Directory to save logs and trained model
-MODEL_DIR = os.path.join(ROOT_DIR, "logs")
+MODEL_DIR = os.path.join(ROOT_DIR, 'logs')
 
 # Local path to trained weights file
-COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
+COCO_MODEL_PATH = os.path.join(ROOT_DIR, 'mask_rcnn_coco.h5')
 
 # Download COCO trained weights from Releases if needed
 if not os.path.exists(COCO_MODEL_PATH):
@@ -50,7 +50,7 @@ if not os.path.exists(IMAGE_PATH):
     page = urllib.request.urlretrieve(img_url, IMAGE_PATH)
 
 # Create a Mask-RCNN model in inference mode
-model = MaskRCNN(mode="inference", model_dir=MODEL_DIR, config=MaskRCNNConfig())
+model = MaskRCNN(mode='inference', model_dir=MODEL_DIR, config=MaskRCNNConfig())
 
 # Load pre-trained model
 model.load_weights(COCO_MODEL_PATH, by_name=True)
@@ -82,7 +82,6 @@ for box in car_boxes:
 
 # Show the frame of video on the screen
 cv2.imshow('Ring', frame)
-
 
 cv2.waitKey(0)
 
