@@ -15,6 +15,9 @@ import d6tstack
 
 sensors = ['sds011', 'dht22', 'bme280']
 sensor_ids = ['20826', '6179', '12603', '17231', '7201']
+
+location_ids = ['10574', '3123', '6367', '8732', '3642']
+
 save_dir = 'data/'
 
 
@@ -34,9 +37,10 @@ def valid_link(link):
 
 def valid_sensor(link):
     contains_sensor = any([sensor in link for sensor in sensors])
-    contains_sensor_id = any([sensor_id in link for sensor_id in sensor_ids])
+    # contains_sensor_id = any([sensor_id in link for sensor_id in sensor_ids])
 
-    return contains_sensor and contains_sensor_id
+    # return contains_sensor and contains_sensor_id
+    return contains_sensor
 
 
 def get_file_links(link):
@@ -46,20 +50,30 @@ def get_file_links(link):
     return [link + l['href'] for l in links if '.csv' in l['href'] and valid_sensor(l['href'])]
 
 
-def fetch_url(link):
-    path = save_dir + os.path.basename(link)
-    if not os.path.exists(path):
-        r = requests.get(link, stream=True)
-        if r.status_code == 200:
-            with open(path, 'wb') as f:
-                for chunk in r:
-                    f.write(chunk)
-    return path
+def fetch_csv(link):
+    return pd.read_csv(link, sep=';')
+
+
+def contains_location(df):
+    if 'location' in df.columns and len(df.location) > 0:
+        return str(df.location.values[0]) in location_ids
+    else:
+        return False
+
+
+def fetch(link):
+    df = fetch_csv(link)
+    res = contains_location(df)
+    if res:
+        path = save_dir + os.path.basename(link)
+        df.to_csv(path, index=False)
+        return path
+    else:
+        return None
 
 
 links = [link['href'] for link in soup.findAll('a') if valid_link(link)]
 links = [url + '/' + link for link in links]
-
 
 print("Start crawling %s links" % str(len(links)))
 
@@ -67,17 +81,20 @@ thread_pool_size = multiprocessing.cpu_count()
 
 with Pool(thread_pool_size) as pool:
 
-    links = tqdm(pool.imap_unordered(
-        get_file_links, links), total=len(links))
+    links = list(tqdm(pool.imap_unordered(
+        get_file_links, links), total=len(links)))
     links = list(chain.from_iterable(links))
 
-    print('Start downloading %s links to %s' % (str(len(links)), save_dir))
+    print('Start to analyse %s links for same location ids' % str(len(links)))
 
-    links = tqdm(pool.imap_unordered(
-        fetch_url, links), total=len(links))
+    links = list(tqdm(pool.imap_unordered(
+        fetch, links), total=len(links)))
 
     pool.close()
     pool.join()
+
+
+links = [l for l in links if l is not None]
 
 print('Post processing downloaded files')
 
