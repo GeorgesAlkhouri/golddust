@@ -1,16 +1,13 @@
-import time
-from bs4 import BeautifulSoup, SoupStrainer
-import requests
-import re
-from datetime import datetime
-from itertools import chain
-import pandas as pd
-from functools import reduce
-import dask.dataframe as dd
-from tqdm import tqdm
 import os
 import multiprocessing
 from multiprocessing import Pool
+from datetime import datetime
+from itertools import chain
+from functools import reduce
+import requests
+from bs4 import BeautifulSoup, SoupStrainer
+import pandas as pd
+from tqdm import tqdm
 import d6tstack
 
 sensors = ['sds011', 'dht22', 'bme280']
@@ -19,7 +16,7 @@ sensor_ids = ['20826', '6179', '12603', '17231', '7201']
 location_ids = ['10574', '3123', '6367', '8732', '3642']
 
 save_dir = 'data/'
-
+start_date = datetime.strptime('2018-01-01', '%Y-%m-%d')
 
 url = 'https://archive.luftdaten.info'
 page = requests.get(url)
@@ -28,11 +25,14 @@ soup = BeautifulSoup(page.content, 'html.parser')
 
 def valid_link(link):
     try:
-        datetime.strptime(link['href'][0:-1], '%Y-%m-%d')
+        link_date = datetime.strptime(link['href'][0:-1], '%Y-%m-%d')
     except ValueError:
         return False
     else:
-        return True
+        if not start_date:
+            return True
+        else:
+            return link_date >= start_date
 
 
 def valid_sensor(link):
@@ -62,20 +62,24 @@ def contains_location(df):
 
 
 def fetch(link):
-    df = fetch_csv(link)
-    res = contains_location(df)
-    if res:
-        path = save_dir + os.path.basename(link)
-        df.to_csv(path, index=False)
-        return path
-    else:
-        return None
+    try:
+        df = fetch_csv(link)
+        res = contains_location(df)
+        if res:
+            path = save_dir + os.path.basename(link)
+            df.to_csv(path, index=False)
+            return path, None
+        else:
+            return None, None
+    except:
+        return None, link
 
 
 links = [link['href'] for link in soup.findAll('a') if valid_link(link)]
 links = [url + '/' + link for link in links]
 
-print("Start crawling %s links" % str(len(links)))
+print("Start crawling %s links beginning from the %s" %
+      (str(len(links)), start_date if start_date else 'beginning'))
 
 thread_pool_size = multiprocessing.cpu_count()
 
@@ -84,17 +88,21 @@ with Pool(thread_pool_size) as pool:
     links = list(tqdm(pool.imap_unordered(
         get_file_links, links), total=len(links)))
     links = list(chain.from_iterable(links))
-
+    print(list(links[0:10]))
     print('Start to analyse %s links for same location ids' % str(len(links)))
 
-    links = list(tqdm(pool.imap_unordered(
-        fetch, links), total=len(links)))
+    links, error_links = zip(*list(tqdm(pool.imap_unordered(
+        fetch, links), total=len(links))))
 
     pool.close()
     pool.join()
 
 
 links = [l for l in links if l is not None]
+
+
+print('Links with errors')
+print(error_links)
 
 print('Post processing downloaded files')
 
