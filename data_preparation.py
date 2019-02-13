@@ -137,5 +137,5 @@ for sensor_typ in sensors:
         continue
     print(sensor_typ)
 
-    c = d6tstack.combine_csv.CombinerCSV(links_for_sensor[sensor_typ], sep=';')
+    c = d6tstack.combine_csv.CombinerCSV(links_for_sensor[sensor_typ], sep=',')
     c.to_csv_align(output_dir=save_dir, output_prefix='processed_')
