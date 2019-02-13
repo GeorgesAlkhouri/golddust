@@ -1,3 +1,9 @@
+"""
+Script for crawling and downloading sensor data from http://luftdaten.info/.
+Configurable parameters are sensor type, sensor id, location_id and a optional start
+date to download sensor data.
+"""
+
 import os
 import multiprocessing
 from multiprocessing import Pool
@@ -12,11 +18,9 @@ import d6tstack
 
 sensors = ['sds011', 'dht22', 'bme280']
 sensor_ids = ['20826', '6179', '12603', '17231', '7201']
-
 location_ids = ['10574', '3123', '6367', '8732', '3642']
-
-save_dir = 'data/'
 start_date = datetime.strptime('2018-01-01', '%Y-%m-%d')
+save_dir = 'data/'
 
 url = 'https://archive.luftdaten.info'
 page = requests.get(url)
