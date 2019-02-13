@@ -1,2 +1,4 @@
 ['remote "storage"']
 url = ssh://storage@139.18.13.242:/home/storage
+[core]
+remote = storage
