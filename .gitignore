@@ -105,7 +105,7 @@ venv.bak/
 
 # project specific files
 golddust/lvbcam/
-data/*
-!data/.gitkeep
 api.py
 nohup.out
+
+/data
