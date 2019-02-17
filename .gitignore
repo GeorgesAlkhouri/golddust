@@ -105,3 +105,7 @@ venv.bak/
 
 # project specific files
 golddust/lvbcam/
+api.py
+nohup.out
+
+/data
