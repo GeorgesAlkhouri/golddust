@@ -104,8 +104,10 @@ venv.bak/
 .mypy_cache/
 
 # project specific files
-golddust/lvbcam/
+golddust/webcam/
 api.py
 nohup.out
 
 /data
+
+.DS_Store
