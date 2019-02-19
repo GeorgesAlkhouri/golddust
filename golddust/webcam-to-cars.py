@@ -16,7 +16,7 @@ from datetime import datetime
 # Configuration that will be used by the Mask-RCNN library
 class MaskRCNNConfig(mrcnn.config.Config):
     NAME = 'coco_pretrained_model_config'
-    IMAGES_PER_GPU = 2
+    IMAGES_PER_GPU = 1
     GPU_COUNT = 1
     NUM_CLASSES = 1 + 80  # COCO dataset has 80 classes + one background class
     DETECTION_MIN_CONFIDENCE = 0.3
@@ -49,7 +49,7 @@ if not os.path.exists(COCO_MODEL_PATH):
     mrcnn.utils.download_trained_weights(COCO_MODEL_PATH)
 
 # Path to images, replace with correct path
-IMAGE_PATH = '/Users/georges/Downloads/images'
+IMAGE_PATH = '/home/georges/images'
 
 images = {datetime.strptime(os.path.basename(file)[:-4], '%Y-%m-%d_%H:%M'): cv2.cvtColor(
     cv2.imread(file), cv2.COLOR_BGR2RGB) for file in glob.glob(IMAGE_PATH + '/*.jpg')}
@@ -66,17 +66,10 @@ print(model.keras_model.summary())
 cars = {}
 
 
-print(len(images.values()))
-
-results = model.detect(list(images.values())[:2])
-
-print(len(results))
-
-# for date, image in images.values():
-#     results = model.detect([image], verbose=0)
-#     print(results)
-#     break
-#     #r = results[0]
+# BUG works only with real GPU
+for date, image in images.items():
+    results = model.detect([image], verbose=0)
+    r = results[0]
 #     #car_boxes = get_car_boxes(r['rois'], r['class_ids'])
 #     #cars[date] = len(car_boxes)
 
