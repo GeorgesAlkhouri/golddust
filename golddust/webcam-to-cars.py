@@ -7,6 +7,7 @@ import cv2
 import mrcnn.config
 import mrcnn.utils
 import glob
+import pandas as pd
 
 from mrcnn.model import MaskRCNN
 from pathlib import Path
@@ -66,5 +67,5 @@ for date, image in images.items():
     cars[date] = len(car_boxes)
 
 
-
-# write cars to df
+df = pd.DataFrame.from_dict(cars)
+df.to_csv(os.path.join(ROOT_DIR, 'cars.csv'))
