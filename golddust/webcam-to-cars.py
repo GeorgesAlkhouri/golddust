@@ -55,8 +55,8 @@ model.load_weights(COCO_MODEL_PATH, by_name=True)
 
 # Path to images, replace with correct path
 IMAGE_PATH = '/home/moe/images'
+#IMAGE_PATH = '/Users/m/Nextcloud/luftdaten/zwei/image-test'
 
-cars = {}
 for file in glob.glob(IMAGE_PATH + '/*jpg'):
     image = cv2.imread(file)
     if image is not None:
@@ -66,9 +66,8 @@ for file in glob.glob(IMAGE_PATH + '/*jpg'):
             results = model.detect([rgb_image], verbose=0)
             r = results[0]
             car_boxes = get_car_boxes(r['rois'], r['class_ids'])
-            cars[date] = len(car_boxes)
+            #cars[date] = len(car_boxes)
+            with open(os.path.join(ROOT_DIR, 'cars.csv'), 'a') as c:
+                c.write(str(date) + ';' + str(len(car_boxes)) + '\n')
         except:
             pass
-
-df = pd.DataFrame(cars, index=[0])
-df.to_csv(os.path.join(ROOT_DIR, 'cars.csv'))
