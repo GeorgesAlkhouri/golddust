@@ -1,0 +1,6 @@
+md5: 5cff6d12773c40c992550395c698fade
+outs:
+- cache: true
+  md5: 43dc62b3d99442b1b77b7ad293788cac
+  metric: false
+  path: cars.csv
