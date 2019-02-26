@@ -35,7 +35,7 @@ def get_car_boxes(boxes, class_ids):
 
 
 # Root directory of the project
-ROOT_DIR = Path('.')
+ROOT_DIR = Path('./')
 
 # Directory to save logs and trained model
 MODEL_DIR = os.path.join(ROOT_DIR, 'logs')
@@ -57,7 +57,6 @@ model.load_weights(COCO_MODEL_PATH, by_name=True)
 IMAGE_PATH = '/home/moe/images'
 
 cars = {}
-
 for file in glob.glob(IMAGE_PATH + '/*jpg'):
     image = cv2.imread(file)
     if image is not None:
@@ -71,5 +70,5 @@ for file in glob.glob(IMAGE_PATH + '/*jpg'):
         except:
             pass
 
-df = pd.DataFrame.from_dict(cars)
+df = pd.DataFrame(cars, index=[0])
 df.to_csv(os.path.join(ROOT_DIR, 'cars.csv'))
