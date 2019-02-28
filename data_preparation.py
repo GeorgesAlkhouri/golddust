@@ -17,9 +17,9 @@ from tqdm import tqdm
 import d6tstack
 
 sensors = ['sds011', 'dht22', 'bme280']
-sensor_ids = ['20826', '6179', '12603', '17231', '7201']
-location_ids = ['10574', '3123', '6367', '8732', '3642']
-start_date = datetime.strptime('2018-01-01', '%Y-%m-%d')
+sensor_ids = ['20826', '12603', '17231', '7201', '6179']
+location_ids = ['10574', '6367', '8732', '3642', '3123']
+start_date = None #datetime.strptime('2018-01-01', '%Y-%m-%d')
 save_dir = 'data/'
 
 url = 'https://archive.luftdaten.info'
