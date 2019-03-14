@@ -1,5 +1,5 @@
 # golddust
-
+Contribution to the [Data Science Challenge](https://btw.informatik.uni-rostock.de/index.php/de/calls/data-science-challenge) for the BTW 2019 in Rostock with the final [Presentation](btw-2019.pdf)
 ## Usage
 
 To crawl and download data from http://luftdaten.info by yourself, look at the `data_preparation.py` script.
